@@ -18,6 +18,16 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: cordova.variables.gradle 생성
+        run: |
+          cat > android/capacitor-cordova-android-plugins/cordova.variables.gradle << 'GRADLE'
+          ext {
+            cdvMinSdkVersion = project.hasProperty('minSdkVersion') ? rootProject.ext.minSdkVersion : 22
+            cdvPluginPostBuildExtras = []
+            cordovaConfig = [:]
+          }
+          GRADLE
+
       - name: Gradle 실행 권한 부여
         run: chmod +x android/gradlew
 
