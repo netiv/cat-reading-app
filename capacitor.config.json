@@ -1,0 +1,12 @@
+{
+  "appId": "com.catreading.momo",
+  "appName": "고양이 독서일지",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": true,
+    "backgroundColor": "#FFFFFF"
+  }
+}

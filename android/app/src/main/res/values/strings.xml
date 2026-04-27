@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">고양이 독서일지</string>
+    <string name="title_activity_main">고양이 독서일지</string>
+    <string name="package_name">com.catreading.momo</string>
+    <string name="custom_url_scheme">com.catreading.momo</string>
+</resources>

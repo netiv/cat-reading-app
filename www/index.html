@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="theme-color" content="#7c3aed"/>
+<title>고양이 독서일지</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--bg:#f0ebff;--card:#fff;--border:#e0d6ff;--purple:#7c3aed;--purple2:#5b21b6;--amber:#d97706;--text:#1e1b4b;--text2:#6d5fd4}
+html,body{height:100%;background:var(--bg);overscroll-behavior:none}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;color:var(--text)}
+.particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;overflow:hidden}
+.particle{position:absolute;font-size:18px;animation:fall 1.2s ease-out forwards;opacity:0}
+@keyframes fall{0%{opacity:1;transform:translateY(-10px) scale(1)}100%{opacity:0;transform:translateY(110px) scale(.3)}}
+.header{background:var(--card);border-bottom:2px solid var(--border);padding:10px 14px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100}
+.cat-hero{position:relative;cursor:pointer;flex-shrink:0}
+.lv-badge{position:absolute;bottom:-4px;right:-4px;background:var(--purple);color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:99px;border:2px solid #fff}
+.hero-right{flex:1;min-width:0}
+.hero-name{font-size:14px;font-weight:700;color:var(--purple2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hero-sub{font-size:11px;color:var(--text2);margin-bottom:3px}
+.exp-bg{height:6px;background:#ede9fe;border-radius:99px;overflow:hidden}
+.exp-fill{height:100%;background:linear-gradient(90deg,#8b5cf6,#06b6d4);border-radius:99px;transition:width .5s}
+.top-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.coin-box{display:flex;align-items:center;gap:3px;font-size:13px;font-weight:700;color:#d97706}
+.streak-box{display:flex;align-items:center;gap:3px;font-size:12px;font-weight:700;color:#ef4444}
+.tabs{display:flex;background:var(--card);border-bottom:2px solid var(--border);position:sticky;top:61px;z-index:90}
+.tab{flex:1;padding:9px 2px;border:none;background:transparent;font-size:11px;font-weight:600;color:#9ca3af;cursor:pointer;border-bottom:3px solid transparent;font-family:inherit}
+.tab.active{color:var(--purple);border-bottom-color:var(--purple)}
+.content{padding:12px 13px 80px;overflow-y:auto;height:calc(100vh - 110px);-webkit-overflow-scrolling:touch}
+.card{background:var(--card);border-radius:16px;border:2px solid var(--border);padding:13px;margin-bottom:11px}
+.card-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px}
+.exp-preview{background:#faf5ff;border:2px dashed #c4b5fd;border-radius:12px;padding:10px 12px;margin-bottom:12px}
+.exp-preview-title{font-size:12px;font-weight:700;color:var(--purple2);margin-bottom:6px}
+.exp-row{display:flex;justify-content:space-between;padding:2px 0;font-size:12px}
+.exp-row-label{color:var(--text2)}.exp-row-val{font-weight:700;color:var(--purple)}
+.exp-total{border-top:1px dashed #c4b5fd;margin-top:6px;padding-top:6px;display:flex;justify-content:space-between;font-weight:700}
+.exp-total-label{color:var(--text);font-size:12px}.exp-total-val{color:var(--purple);font-size:13px}
+.page-display{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.page-num{font-size:20px;font-weight:700;color:var(--purple);min-width:60px}
+.page-tier{font-size:12px;padding:3px 10px;border-radius:99px;font-weight:700}
+.tier-s{background:#dcfce7;color:#166534;border:1.5px solid #4ade80}
+.tier-a{background:#e0f2fe;color:#075985;border:1.5px solid #38bdf8}
+.tier-b{background:#fef9c3;color:#92400e;border:1.5px solid #fbbf24}
+.tier-c{background:#f3f4f6;color:#4b5563;border:1.5px solid #d1d5db}
+input[type=range]{width:100%;accent-color:var(--purple)}
+.streak-card{background:#fffbeb;border:2px solid #fbbf24;border-radius:16px;padding:13px;margin-bottom:11px}
+.streak-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.streak-title{font-size:13px;font-weight:700;color:#92400e}
+.streak-days{display:flex;gap:6px;flex-wrap:wrap}
+.streak-day{width:30px;height:30px;border-radius:50%;border:2px solid #fbbf24;background:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;color:#d97706;font-weight:700}
+.streak-day.active{background:#f59e0b;color:#fff}
+.streak-bonus{font-size:12px;color:#92400e;margin-top:6px;font-weight:600}
+.cat-evo-row{display:flex;justify-content:center;gap:3px;margin-bottom:8px;flex-wrap:wrap;align-items:flex-end}
+.evo-item{display:flex;flex-direction:column;align-items:center;gap:2px;opacity:.3}
+.evo-item.unlocked{opacity:1}.evo-item.current{opacity:1;transform:scale(1.12)}
+.evo-arrow{font-size:11px;color:#c4b5fd;margin-bottom:5px}
+.evo-emoji{font-size:20px;line-height:1}.evo-lbl{font-size:9px;font-weight:700;color:var(--text2)}
+.big-cat{font-size:64px;cursor:pointer;display:block;text-align:center;line-height:1;margin:6px 0}
+.speech-bubble{background:#ede9fe;border-radius:12px;padding:7px 13px;font-size:12px;color:var(--purple2);font-weight:500;display:inline-block;position:relative}
+.speech-bubble::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);border:5px solid transparent;border-bottom-color:#ede9fe}
+.prog-header{display:flex;justify-content:space-between;margin-bottom:7px}
+.prog-label{font-size:13px;font-weight:700}.prog-pct{font-size:12px;font-weight:700;color:var(--purple)}
+.prog-bg{height:11px;background:#ede9fe;border-radius:99px;overflow:hidden;margin-bottom:7px}
+.prog-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#06b6d4);border-radius:99px;transition:width .6s}
+.ms-row{display:flex;gap:4px;flex-wrap:wrap}
+.ms{font-size:11px;padding:2px 7px;border-radius:99px;border:1.5px solid #ddd;color:#aaa;background:#fafafa;font-weight:600}
+.ms.done{background:#dcfce7;border-color:#4ade80;color:#166534}.ms.nxt{background:#fef9c3;border-color:#facc15;color:#92400e}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:11px}
+.stat{background:var(--card);border-radius:10px;border:2px solid var(--border);padding:8px 4px;text-align:center}
+.stat-n{font-size:17px;font-weight:700;color:var(--purple)}.stat-l{font-size:10px;color:var(--text2)}
+.field{margin-bottom:11px}
+.field label{display:block;font-size:12px;font-weight:700;color:var(--text2);margin-bottom:4px}
+.field input,.field textarea{width:100%;border:2px solid var(--border);border-radius:10px;padding:8px 11px;font-size:14px;font-family:inherit;background:#faf9ff;color:var(--text);outline:none}
+.field input:focus,.field textarea:focus{border-color:var(--purple)}
+.field textarea{resize:vertical;min-height:56px}
+.star-row{display:flex;gap:5px}
+.star{font-size:26px;cursor:pointer;color:#e5e7eb;line-height:1}
+.star.on{color:#f59e0b;transform:scale(1.15)}
+.emoji-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.ebtn{font-size:22px;padding:7px 3px;border:2px solid var(--border);border-radius:10px;background:#faf9ff;cursor:pointer;text-align:center}
+.ebtn.sel{border-color:var(--purple);background:#ede9fe}
+.add-btn{width:100%;padding:12px;border:none;border-radius:12px;background:var(--purple);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.book-item{background:var(--card);border-radius:13px;border:2px solid var(--border);padding:11px 13px;margin-bottom:9px}
+.book-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.book-ttl{font-size:14px;font-weight:700;color:var(--text);line-height:1.3}
+.book-del{background:none;border:none;cursor:pointer;font-size:17px;color:#c4b5fd;padding:0 2px;flex-shrink:0}
+.book-meta{font-size:12px;color:var(--text2);margin:4px 0;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.page-badge{font-size:11px;padding:2px 7px;border-radius:99px;font-weight:700}
+.book-memo{font-size:13px;color:#4b5563;margin-top:5px;padding-top:5px;border-top:1px dashed #e0d6ff;line-height:1.5}
+.book-exp{font-size:11px;color:#7c3aed;font-weight:700}
+.empty{text-align:center;padding:2rem;color:var(--text2);font-size:14px;line-height:2}
+.q-card{background:var(--card);border-radius:13px;border:2px solid var(--border);padding:11px 13px;margin-bottom:9px}
+.q-head{display:flex;align-items:center;gap:7px;margin-bottom:3px}
+.q-icon{font-size:18px}.q-title{font-size:13px;font-weight:700}
+.q-desc{font-size:12px;color:var(--text2);margin-bottom:5px}
+.q-pbg{height:7px;background:#ede9fe;border-radius:99px;overflow:hidden;margin-bottom:4px}
+.q-pfill{height:100%;background:linear-gradient(90deg,#f59e0b,#ef4444);border-radius:99px}
+.q-foot{display:flex;justify-content:space-between}
+.q-reward{font-size:12px;font-weight:700;color:#d97706}.q-cnt{font-size:11px;color:#9ca3af}
+.q-done{background:#f0fdf4;border-color:#4ade80}.q-done .q-title{color:#166534}
+.gacha-card{background:#fdf4ff;border:2px solid #c4b5fd;border-radius:16px;padding:14px;margin-bottom:11px;text-align:center}
+.gacha-title{font-size:14px;font-weight:700;color:var(--purple2);margin-bottom:4px}
+.gacha-desc{font-size:12px;color:var(--text2);margin-bottom:12px}
+.gacha-slot{display:flex;justify-content:center;gap:8px;margin-bottom:12px}
+.slot-box{width:60px;height:60px;border-radius:12px;border:2px solid #c4b5fd;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:28px}
+.gacha-btn{padding:10px 28px;border:none;border-radius:10px;background:var(--purple);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.gacha-btn:disabled{opacity:.5;cursor:default}
+.gacha-cost{font-size:12px;color:var(--text2);margin-top:6px}
+.gacha-result{font-size:13px;font-weight:700;margin-top:8px;min-height:20px}
+.result-mega{color:#d97706}.result-big{color:#7c3aed}.result-normal{color:#059669}.result-small{color:#6b7280}
+.sticker-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:9px}
+.stk{font-size:22px;text-align:center;padding:4px;border-radius:8px;border:2px solid var(--border);background:#faf9ff;opacity:.25}
+.stk.owned{opacity:1;border-color:#c4b5fd}
+.shop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.shop-item{background:#faf9ff;border-radius:11px;border:2px dashed var(--border);padding:9px 7px;text-align:center;cursor:pointer}
+.shop-icon{font-size:26px;line-height:1;margin-bottom:3px}
+.shop-name{font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px}
+.shop-price{font-size:11px;font-weight:700;color:#d97706}
+.shop-item.bought{border-style:solid;border-color:#4ade80;background:#f0fdf4}
+.badge-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.badge{background:var(--card);border-radius:11px;border:2px solid var(--border);padding:9px 5px;text-align:center;opacity:.3}
+.badge.earned{opacity:1;border-color:#f59e0b;background:#fffbeb}
+.badge-icon{font-size:20px;line-height:1}.badge-name{font-size:10px;font-weight:700;color:var(--text2);margin-top:2px}
+.setting-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.setting-row label{font-size:12px;font-weight:700;color:var(--text2);width:80px;flex-shrink:0}
+.setting-row input{flex:1;border:2px solid var(--border);border-radius:10px;padding:8px 11px;font-size:14px;font-family:inherit;background:#faf9ff;color:var(--text);outline:none}
+.save-btn{padding:8px 16px;border:none;border-radius:10px;background:var(--purple);color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;flex-shrink:0}
+.danger-btn{padding:8px 14px;border:2px solid #fca5a5;border-radius:10px;background:transparent;color:#ef4444;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.onboard-wrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;align-items:center;justify-content:center;padding:20px}
+.onboard-wrap.show{display:flex}
+.onboard{background:var(--card);border-radius:22px;padding:26px 20px;max-width:340px;width:100%;text-align:center;border:3px solid var(--purple)}
+.onboard-emoji{font-size:60px;line-height:1;margin-bottom:10px}
+.onboard-title{font-size:19px;font-weight:700;color:var(--purple2);margin-bottom:5px}
+.onboard-desc{font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.6}
+.ob-field{text-align:left;margin-bottom:12px}
+.ob-field label{display:block;font-size:12px;font-weight:700;color:var(--text2);margin-bottom:4px}
+.ob-field input{width:100%;border:2px solid var(--border);border-radius:10px;padding:9px 12px;font-size:15px;font-family:inherit;background:#faf9ff;color:var(--text);outline:none;text-align:center}
+.ob-hint{font-size:11px;color:#9ca3af;margin-top:3px;text-align:center}
+.onboard-btn{width:100%;padding:13px;border:none;border-radius:12px;background:var(--purple);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px}
+.modal-wrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;padding:20px}
+.modal-wrap.show{display:flex}
+.modal{background:var(--card);border-radius:20px;padding:22px 18px;max-width:320px;width:100%;text-align:center;border:3px solid var(--purple);animation:popIn .3s ease}
+@keyframes popIn{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-emoji{font-size:52px;line-height:1;margin-bottom:7px}
+.modal-title{font-size:19px;font-weight:700;color:var(--purple2);margin-bottom:7px}
+.modal-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:6px}
+.modal-reward{font-size:14px;font-weight:700;color:#d97706;margin-bottom:14px;white-space:pre-line}
+.modal-close{padding:9px 26px;border:none;border-radius:10px;background:var(--purple);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+</style>
+</head>
+<body>
+<div class="particles" id="ptcl"></div>
+<div class="onboard-wrap" id="onboard">
+  <div class="onboard">
+    <div class="onboard-emoji">🐱</div>
+    <div class="onboard-title">안녕! 나는 네 독서 친구야!</div>
+    <div class="onboard-desc">이름을 지어주고 목표 권수를 정해줘.<br>책을 읽을수록 내가 성장한다냥!</div>
+    <div class="ob-field"><label>고양이 이름</label><input type="text" id="obName" placeholder="예) 나비, 치즈, 코코" maxlength="8"/></div>
+    <div class="ob-field"><label>읽을 목표 권수</label><input type="number" id="obGoal" placeholder="100" min="1" max="9999"/><div class="ob-hint">목표를 달성하면 선물을 받을 수 있어요!</div></div>
+    <button class="onboard-btn" onclick="finishOnboard()">시작하기!</button>
+  </div>
+</div>
+<div class="header">
+  <div class="cat-hero" onclick="tapHeaderCat()"><div id="hCat" style="font-size:38px;line-height:1">🐱</div><div class="lv-badge" id="hLv">Lv.1</div></div>
+  <div class="hero-right"><div class="hero-name" id="hName">...</div><div class="hero-sub" id="hSub">Lv.1 아기냥</div><div class="exp-bg"><div class="exp-fill" id="expFill" style="width:0%"></div></div></div>
+  <div class="top-right"><div class="coin-box">🪙<span id="coinTxt">0</span></div><div class="streak-box" id="streakBox" style="display:none">🔥<span id="streakTxt">0</span>일</div></div>
+</div>
+<div class="tabs">
+  <button class="tab active" onclick="sw('home')">🏠 홈</button>
+  <button class="tab" onclick="sw('add')">📖 기록</button>
+  <button class="tab" onclick="sw('list')">📚 책장</button>
+  <button class="tab" onclick="sw('quest')">⚔️ 퀘스트</button>
+  <button class="tab" onclick="sw('shop')">🏪 상점</button>
+  <button class="tab" onclick="sw('settings')">⚙️ 설정</button>
+</div>
+<div class="content">
+  <div id="t-home">
+    <div class="card" style="text-align:center"><div class="cat-evo-row" id="evoRow"></div><div class="big-cat" id="bigCat" onclick="tapCat()">🐱</div><div class="speech-bubble" id="speech">책을 읽으면 내가 성장해냥!</div></div>
+    <div id="streakSection"></div>
+    <div class="card"><div class="prog-header"><span class="prog-label">📕 목표 달성</span><span class="prog-pct" id="progPct">0%</span></div><div class="prog-bg"><div class="prog-fill" id="progFill" style="width:0%"></div></div><div class="ms-row" id="msRow"></div></div>
+    <div class="stats-grid"><div class="stat"><div class="stat-n" id="sTotal">0</div><div class="stat-l">읽은 책</div></div><div class="stat"><div class="stat-n" id="sRating">—</div><div class="stat-l">평균별점</div></div><div class="stat"><div class="stat-n" id="sMonth">0</div><div class="stat-l">이번달</div></div><div class="stat"><div class="stat-n" id="sStreak">0</div><div class="stat-l">🔥연속</div></div></div>
+    <div id="homeQ"></div>
+  </div>
+  <div id="t-add" style="display:none">
+    <div class="card">
+      <div class="card-title">📖 새 책 기록하기</div>
+      <div class="field"><label>책 제목 *</label><input type="text" id="inTitle" placeholder="읽은 책 이름을 적어봐!"/></div>
+      <div class="field">
+        <label>📄 페이지 수 <span style="font-size:11px;color:#9ca3af">(두꺼울수록 EXP 더 많이!)</span></label>
+        <div class="page-display"><div class="page-num" id="pageNum">~150p</div><div class="page-tier tier-b" id="pageTier">B등급</div><div style="font-size:11px;color:var(--text2);margin-left:4px" id="pageExpHint">+10 EXP</div></div>
+        <input type="range" id="pageSlider" min="0" max="4" step="1" value="1" oninput="updatePageTier()"/>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:#9ca3af;margin-top:2px"><span>~50p</span><span>~150p</span><span>~300p</span><span>~500p</span><span>500p+</span></div>
+      </div>
+      <div class="field"><label>별점</label><div class="star-row"><span class="star" data-v="1" onclick="setStar(1)">★</span><span class="star" data-v="2" onclick="setStar(2)">★</span><span class="star" data-v="3" onclick="setStar(3)">★</span><span class="star" data-v="4" onclick="setStar(4)">★</span><span class="star" data-v="5" onclick="setStar(5)">★</span></div></div>
+      <div class="field"><label>이 책 읽고 어떤 느낌이었어?</label><div class="emoji-grid"><button class="ebtn" data-e="😆" onclick="setEmoji('😆')">😆</button><button class="ebtn" data-e="😊" onclick="setEmoji('😊')">😊</button><button class="ebtn" data-e="😐" onclick="setEmoji('😐')">😐</button><button class="ebtn" data-e="😴" onclick="setEmoji('😴')">😴</button><button class="ebtn" data-e="🤯" onclick="setEmoji('🤯')">🤯</button><button class="ebtn" data-e="😢" onclick="setEmoji('😢')">😢</button><button class="ebtn" data-e="😂" onclick="setEmoji('😂')">😂</button><button class="ebtn" data-e="😍" onclick="setEmoji('😍')">😍</button><button class="ebtn" data-e="🥰" onclick="setEmoji('🥰')">🥰</button><button class="ebtn" data-e="🔥" onclick="setEmoji('🔥')">🔥</button></div></div>
+      <div class="field"><label>한마디 남기기 (선택)</label><textarea id="inMemo" placeholder="주인공이 멋있었어! / 결말이 슬펐어... 뭐든 OK!" oninput="updateExpPreview()"></textarea></div>
+      <div class="exp-preview" id="expPreview"></div>
+      <button class="add-btn" onclick="addBook()">✅ 기록 완료!</button>
+    </div>
+  </div>
+  <div id="t-list" style="display:none"><div id="bookList"></div></div>
+  <div id="t-quest" style="display:none"><div id="questList"></div></div>
+  <div id="t-shop" style="display:none">
+    <div class="gacha-card"><div class="gacha-title">🎲 럭키 뽑기</div><div class="gacha-desc">코인 20개로 보너스 EXP/코인을 뽑아봐!</div><div class="gacha-slot"><div class="slot-box" id="slot0">?</div><div class="slot-box" id="slot1">?</div><div class="slot-box" id="slot2">?</div></div><button class="gacha-btn" id="gachaBtn" onclick="doGacha()">🎰 뽑기! (🪙20)</button><div class="gacha-cost">메가잭팟🎊 대박🎉 보통✨ 꽝😅</div><div class="gacha-result" id="gachaResult"></div></div>
+    <div class="card"><div class="card-title">🌟 내 스티커 컬렉션</div><div class="sticker-grid" id="myStickers"></div></div>
+    <div class="card"><div class="card-title">🏪 스티커 상점</div><div class="shop-grid" id="shopGrid"></div></div>
+    <div class="card"><div class="card-title">🏆 획득 뱃지</div><div class="badge-grid" id="badgeGrid"></div></div>
+  </div>
+  <div id="t-settings" style="display:none">
+    <div class="card"><div class="card-title">⚙️ 설정</div>
+      <div class="setting-row"><label>고양이 이름</label><input type="text" id="setCatName" maxlength="8"/><button class="save-btn" onclick="saveCatName()">저장</button></div>
+      <div class="setting-row"><label>목표 권수</label><input type="number" id="setGoal" min="1" max="9999"/><button class="save-btn" onclick="saveGoal()">저장</button></div>
+      <div style="margin-top:8px;padding-top:12px;border-top:1px dashed var(--border)"><div style="font-size:11px;color:#9ca3af;margin-bottom:8px">⚠️ 위험 구역</div><button class="danger-btn" onclick="resetAll()">모든 기록 초기화</button></div>
+    </div>
+  </div>
+</div>
+<div class="modal-wrap" id="modal"><div class="modal"><div class="modal-emoji" id="mEmoji">🎉</div><div class="modal-title" id="mTitle"></div><div class="modal-desc" id="mDesc"></div><div class="modal-reward" id="mReward"></div><button class="modal-close" onclick="closeModal()">신난다! 닫기</button></div></div>
+<script>
+const STAGES=[{lv:1,e:'🐱',name:'아기냥',need:30,say:['책을 읽으면 내가 성장해냥!','첫 책을 기록해봐냥~','같이 독서 모험 시작하자냥!']},{lv:2,e:'😺',name:'꼬마냥',need:80,say:['조금씩 자라고 있어냥!','책이 재밌어냥?','계속 읽어줘냥~']},{lv:3,e:'😸',name:'활발냥',need:160,say:['으쌰으쌰 파이팅냥!','책 읽는 너가 멋져냥!','더 성장할 수 있어냥!']},{lv:4,e:'🙀',name:'놀람냥',need:280,say:['이렇게 많이 읽었어냥?!','대단하다냥!!','거의 다 왔어냥!']},{lv:5,e:'😻',name:'천재냥',need:450,say:['책을 정복했다냥!','전설의 독서왕이냥!','최고야냥!!']},{lv:6,e:'🦁',name:'왕자냥',need:700,say:['이제 전설이 되었냥!','모두가 우러러보냥!','최강 독서왕냥!']},{lv:7,e:'🐯',name:'전설냥',need:Infinity,say:['넌 전설이야냥!!!','책의 신이 되었냥!!!','이보다 더 멋질 순 없냥!!!']}];
+const PT=[{label:'~50p',cls:'tier-c',name:'C등급',expBonus:5,coinBonus:2},{label:'~150p',cls:'tier-b',name:'B등급',expBonus:10,coinBonus:5},{label:'~300p',cls:'tier-a',name:'A등급',expBonus:20,coinBonus:10},{label:'~500p',cls:'tier-s',name:'S등급',expBonus:35,coinBonus:18},{label:'500p+',cls:'tier-s',name:'SS등급',expBonus:55,coinBonus:28}];
+const SB=[{days:3,exp:15,coin:10,msg:'3일 연속 독서 보너스!'},{days:7,exp:40,coin:25,msg:'7일 연속! 일주일 달성!'},{days:14,exp:80,coin:50,msg:'2주 연속!! 대단해냥!'},{days:30,exp:200,coin:120,msg:'한 달 연속!!! 전설이냥!!!'}];
+const GT=[{prob:.05,emoji:'🎊',label:'메가잭팟!!!',exp:150,coin:100,cls:'result-mega'},{prob:.15,emoji:'🎉',label:'대박!',exp:60,coin:40,cls:'result-big'},{prob:.45,emoji:'✨',label:'보통',exp:20,coin:15,cls:'result-normal'},{prob:.35,emoji:'😅',label:'꽝...',exp:5,coin:0,cls:'result-small'}];
+const SI=['📚','⭐','🌟','💫','🎯','🎲','🍀','💎','🔥','🌈'];
+const QS=[{id:'q1',icon:'🌱',title:'첫 발걸음',desc:'책 1권 기록하기',target:1,reward:50,type:'books'},{id:'q2',icon:'📚',title:'책벌레',desc:'책 5권 기록하기',target:5,reward:100,type:'books'},{id:'q3',icon:'🌟',title:'독서왕 초급',desc:'책 10권 기록하기',target:10,reward:200,type:'books'},{id:'q4',icon:'🔥',title:'독서왕 중급',desc:'책 25권 기록하기',target:25,reward:400,type:'books'},{id:'q5',icon:'👑',title:'전설의 독서왕',desc:'책 50권 기록하기',target:50,reward:800,type:'books'},{id:'q6',icon:'📖',title:'두꺼운 책 도전',desc:'S/SS등급 책 3권',target:3,reward:150,type:'thickBooks'},{id:'q7',icon:'⭐',title:'별점 부자',desc:'별점 5점 책 3권',target:3,reward:80,type:'fiveStar'},{id:'q8',icon:'🔥',title:'연속 독서왕',desc:'3일 연속 독서',target:3,reward:100,type:'streak'},{id:'q9',icon:'✍️',title:'한마디 달인',desc:'한마디 5번 남기기',target:5,reward:70,type:'memoCount'},{id:'q10',icon:'🎰',title:'뽑기 마니아',desc:'뽑기 5번 하기',target:5,reward:60,type:'gachaCount'}];
+const BD=[{id:'b1',icon:'🥚',name:'첫 기록',cond:s=>s.books.length>=1},{id:'b5',icon:'📗',name:'5권',cond:s=>s.books.length>=5},{id:'b10',icon:'📘',name:'10권',cond:s=>s.books.length>=10},{id:'b25',icon:'📕',name:'25권',cond:s=>s.books.length>=25},{id:'bthick',icon:'📦',name:'두꺼운책왕',cond:s=>s.books.filter(b=>b.pageTier>=3).length>=3},{id:'bstreak',icon:'🔥',name:'7일연속',cond:s=>(s.streak||0)>=7},{id:'bgacha',icon:'🎰',name:'뽑기왕',cond:s=>(s.stats.gachaCount||0)>=5},{id:'bmax',icon:'🏆',name:'전설',cond:s=>s.books.length>=50}];
+const SHOP=[{id:'s1',icon:'🌈',name:'무지개',price:30},{id:'s2',icon:'🦋',name:'나비',price:30},{id:'s3',icon:'🌸',name:'벚꽃',price:30},{id:'s4',icon:'⚡',name:'번개',price:40},{id:'s5',icon:'🍀',name:'클로버',price:40},{id:'s6',icon:'💎',name:'다이아',price:60},{id:'s7',icon:'🦄',name:'유니콘',price:80},{id:'s8',icon:'🌙',name:'달',price:50},{id:'s9',icon:'🎯',name:'다트',price:45}];
+let S={books:[],coins:0,exp:0,stickers:[],questDone:{},stats:{memoCount:0,gachaCount:0},catName:'',goal:100,setup:false,streak:0,lastReadDate:''};
+let cStar=0,cEmoji='',cPT=1;
+function load(){try{const d=localStorage.getItem('catRPG4');if(d)S=Object.assign(S,JSON.parse(d))}catch(e){}calcStreak();if(!S.setup)document.getElementById('onboard').classList.add('show');else{syncSettings();render()}}
+function save(){try{localStorage.setItem('catRPG4',JSON.stringify(S))}catch(e){}}
+function calcStreak(){if(!S.lastReadDate)return;const today=new Date().toISOString().slice(0,10);const diff=Math.floor((new Date(today)-new Date(S.lastReadDate))/(1000*60*60*24));if(diff>1){S.streak=0;save()}}
+function updateStreak(){const today=new Date().toISOString().slice(0,10);if(S.lastReadDate===today)return null;const yest=new Date(Date.now()-86400000).toISOString().slice(0,10);if(S.lastReadDate===yest||!S.lastReadDate)S.streak=(S.streak||0)+1;else S.streak=1;S.lastReadDate=today;const b=SB.find(b=>S.streak===b.days);if(b){S.exp+=b.exp;S.coins+=b.coin;return b}return null}
+function getStage(){let st=STAGES[0],c=0;for(const s of STAGES){if(S.exp>=c)st=s;c+=s.need}return st}
+function calcExp(){const p=PT[cPT];const memo=document.getElementById('inMemo').value.trim();const base=20,se=cStar*5,me=memo?10:0,ee=cEmoji?5:0,pe=p.expBonus;const m=S.streak>=7?1.5:S.streak>=3?1.25:1;return{total:Math.round((base+se+me+ee+pe)*m),totalCoin:10+(cStar*3)+(memo?5:0)+p.coinBonus,mult:m,pageExp:pe,pageCoin:p.coinBonus,se,me,ee}}
+function updatePageTier(){cPT=parseInt(document.getElementById('pageSlider').value);const p=PT[cPT];document.getElementById('pageNum').textContent=p.label;document.getElementById('pageTier').textContent=p.name;document.getElementById('pageTier').className='page-tier '+p.cls;document.getElementById('pageExpHint').textContent='+'+p.expBonus+' EXP';updateExpPreview()}
+function updateExpPreview(){const c=calcExp();const si=c.mult>1?` × ${c.mult} (🔥${S.streak}일 연속!)`:'';document.getElementById('expPreview').innerHTML=`<div class="exp-preview-title">📊 예상 보상</div><div class="exp-row"><span class="exp-row-label">기본</span><span class="exp-row-val">+20 EXP</span></div><div class="exp-row"><span class="exp-row-label">페이지 (${PT[cPT].name})</span><span class="exp-row-val">+${PT[cPT].expBonus} EXP / 🪙+${PT[cPT].coinBonus}</span></div><div class="exp-row"><span class="exp-row-label">별점+감정+한마디</span><span class="exp-row-val">+${c.se+c.me+c.ee} EXP</span></div>${c.mult>1?`<div class="exp-row"><span class="exp-row-label" style="color:#ef4444">🔥 연속 보너스</span><span class="exp-row-val" style="color:#ef4444">${si}</span></div>`:''}<div class="exp-total"><span class="exp-total-label">합계</span><span class="exp-total-val">+${c.total} EXP  🪙+${c.totalCoin}</span></div>`}
+function render(){renderHeader();renderEvo();renderProgress();renderStats();renderBooks();renderQuests();renderShop();renderHomeQuests();renderStreakSection();updatePageTier()}
+function renderHeader(){const st=getStage();document.getElementById('hCat').textContent=st.e;document.getElementById('hLv').textContent='Lv.'+st.lv;document.getElementById('hName').textContent=(S.catName||'...')+'의 독서일지';let c=0;for(const s of STAGES){if(s.lv===st.lv)break;c+=s.need}const stExp=S.exp-c,pct=st.need===Infinity?100:Math.min(100,Math.round(stExp/st.need*100));document.getElementById('hSub').textContent='Lv.'+st.lv+' '+st.name+' · EXP '+stExp+'/'+(st.need===Infinity?'MAX':st.need);document.getElementById('expFill').style.width=pct+'%';document.getElementById('coinTxt').textContent=S.coins;const sb=document.getElementById('streakBox');if(S.streak>0){sb.style.display='flex';document.getElementById('streakTxt').textContent=S.streak}else sb.style.display='none'}
+function renderEvo(){const st=getStage();document.getElementById('bigCat').textContent=st.e;document.getElementById('speech').textContent=st.say[Math.floor(Math.random()*st.say.length)];const row=document.getElementById('evoRow');row.innerHTML='';STAGES.forEach((s,i)=>{if(i>0){const a=document.createElement('div');a.className='evo-arrow';a.textContent='›';row.appendChild(a)}const d=document.createElement('div');d.className='evo-item'+(s.lv<=st.lv?' unlocked':'')+(s.lv===st.lv?' current':'');d.innerHTML=`<div class="evo-emoji">${s.e}</div><div class="evo-lbl">${s.name}</div>`;row.appendChild(d)})}
+function renderStreakSection(){const el=document.getElementById('streakSection');if(!S.streak){el.innerHTML='';return}const next=SB.find(b=>b.days>S.streak);const days=Array.from({length:Math.min(S.streak,7)},(_,i)=>`<div class="streak-day active">${i+1}</div>`).join('');el.innerHTML=`<div class="streak-card"><div class="streak-header"><span class="streak-title">🔥 ${S.streak}일 연속 독서 중!</span><span style="font-size:24px">${S.streak>=7?'🐯':S.streak>=3?'🦁':'🔥'}</span></div><div class="streak-days">${days}</div>${next?`<div class="streak-bonus">다음 보너스: ${next.days}일 → +${next.exp} EXP 🪙+${next.coin}</div>`:'<div class="streak-bonus">최고 레벨 연속 독서!</div>'}</div>`}
+function renderProgress(){const n=S.books.length,g=S.goal,pct=Math.min(100,Math.round(n/g*100));document.getElementById('progPct').textContent=n+'/'+g+'권 ('+pct+'%)';document.getElementById('progFill').style.width=pct+'%';const row=document.getElementById('msRow');row.innerHTML='';[.1,.25,.5,.75,1].forEach(r=>{const t=Math.round(g*r),d=document.createElement('div');d.className='ms'+(n>=t?' done':n>=t*.7?' nxt':'');d.textContent=(n>=t?'✓ ':'')+t+'권';row.appendChild(d)})}
+function renderStats(){const b=S.books;document.getElementById('sTotal').textContent=b.length;const rated=b.filter(x=>x.star>0);document.getElementById('sRating').textContent=rated.length?Math.round(rated.reduce((a,x)=>a+x.star,0)/rated.length*10)/10+'★':'—';const ym=new Date().toISOString().slice(0,7);document.getElementById('sMonth').textContent=b.filter(x=>x.date&&x.date.startsWith(ym)).length;document.getElementById('sStreak').textContent=S.streak||0}
+function renderBooks(){const el=document.getElementById('bookList');if(!S.books.length){el.innerHTML='<div class="empty">📚 아직 기록된 책이 없어!<br>첫 번째 책을 기록해봐냥~</div>';return}el.innerHTML=[...S.books].reverse().map(b=>{const p=PT[b.pageTier||0];return`<div class="book-item"><div class="book-top"><div class="book-ttl">${esc(b.title)}</div><button class="book-del" onclick="delBook(${b.at})">✕</button></div><div class="book-meta"><span>${b.emoji||'📖'}</span><span>${'★'.repeat(b.star||0)}${'☆'.repeat(5-(b.star||0))}</span><span class="page-badge ${p.cls}">${p.label} ${p.name}</span><span class="book-exp">+${b.expGained||0} EXP</span><span style="color:#9ca3af">${b.date||''}</span></div>${b.memo?`<div class="book-memo">"${esc(b.memo)}"</div>`:''}</div>`}).join('')}
+function getQP(q){if(q.type==='books')return S.books.length;if(q.type==='fiveStar')return S.books.filter(b=>b.star===5).length;if(q.type==='memoCount')return S.stats.memoCount||0;if(q.type==='streak')return S.streak||0;if(q.type==='thickBooks')return S.books.filter(b=>(b.pageTier||0)>=3).length;if(q.type==='gachaCount')return S.stats.gachaCount||0;return 0}
+function renderQuests(){document.getElementById('questList').innerHTML=QS.map(q=>{const cur=getQP(q),done=cur>=q.target,pct=Math.min(100,Math.round(cur/q.target*100));return`<div class="q-card ${done?'q-done':''}"><div class="q-head"><span class="q-icon">${q.icon}</span><span class="q-title">${done?'✅ ':''} ${q.title}</span></div><div class="q-desc">${q.desc}</div><div class="q-pbg"><div class="q-pfill" style="width:${pct}%"></div></div><div class="q-foot"><span class="q-reward">🪙 ${q.reward} 코인</span><span class="q-cnt">${Math.min(cur,q.target)} / ${q.target}</span></div></div>`}).join('')}
+function renderHomeQuests(){const c=document.getElementById('homeQ');const active=QS.filter(q=>getQP(q)<q.target).slice(0,2);if(!active.length){c.innerHTML='<div class="q-card q-done" style="text-align:center;padding:14px"><div style="font-size:22px">🎊</div><div style="font-size:13px;font-weight:700;color:#166534;margin-top:3px">모든 퀘스트 완료!</div></div>';return}c.innerHTML='<div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:7px">⚔️ 진행 중인 퀘스트</div>'+active.map(q=>{const cur=getQP(q),pct=Math.min(100,Math.round(cur/q.target*100));return`<div class="q-card"><div class="q-head"><span class="q-icon">${q.icon}</span><span class="q-title">${q.title}</span></div><div class="q-pbg"><div class="q-pfill" style="width:${pct}%"></div></div><div class="q-foot"><span class="q-reward">🪙 ${q.reward}</span><span class="q-cnt">${Math.min(cur,q.target)}/${q.target}</span></div></div>`}).join('')}
+function renderShop(){const all=SHOP.map(s=>s.icon);document.getElementById('myStickers').innerHTML=all.map(s=>`<div class="stk ${S.stickers.includes(s)?'owned':''}">${s}</div>`).join('');document.getElementById('shopGrid').innerHTML=SHOP.map(item=>{const bought=S.stickers.includes(item.icon);return`<div class="shop-item ${bought?'bought':''}" onclick="buySticker('${item.icon}',${item.price})"><div class="shop-icon">${item.icon}</div><div class="shop-name">${item.name}</div><div class="shop-price">${bought?'✅ 보유':'🪙 '+item.price}</div></div>`}).join('');document.getElementById('badgeGrid').innerHTML=BD.map(b=>`<div class="badge ${b.cond(S)?'earned':''}"><div class="badge-icon">${b.icon}</div><div class="badge-name">${b.name}</div></div>`).join('')}
+function setStar(v){cStar=v;document.querySelectorAll('.star').forEach(s=>s.classList.toggle('on',+s.dataset.v<=v));updateExpPreview()}
+function setEmoji(e){cEmoji=e;document.querySelectorAll('.ebtn').forEach(b=>b.classList.toggle('sel',b.dataset.e===e));updateExpPreview()}
+function addBook(){const title=document.getElementById('inTitle').value.trim();if(!title){alert('책 제목을 적어줘!');return}const memo=document.getElementById('inMemo').value.trim();const prevLv=getStage().lv;const c=calcExp();const sr=updateStreak();S.books.push({title,star:cStar,emoji:cEmoji,memo,pageTier:cPT,expGained:c.total,date:new Date().toISOString().slice(0,10),at:Date.now()});S.exp+=c.total;S.coins+=c.totalCoin;if(memo)S.stats.memoCount=(S.stats.memoCount||0)+1;document.getElementById('inTitle').value='';document.getElementById('inMemo').value='';cStar=0;cEmoji='';cPT=1;document.getElementById('pageSlider').value=1;document.querySelectorAll('.star').forEach(s=>s.classList.remove('on'));document.querySelectorAll('.ebtn').forEach(b=>b.classList.remove('sel'));checkQuests();const newLv=getStage().lv;save();let rw=`+${c.total} EXP  🪙+${c.totalCoin}`;if(c.mult>1)rw+=`\n🔥 연속 보너스 ×${c.mult} 적용!`;if(sr)rw+=`\n🎁 ${sr.msg}\n+${sr.exp} EXP 🪙+${sr.coin}`;if(newLv>prevLv){const st=getStage();showModal(st.e,'레벨 업!','고양이가 진화했어냥!','Lv.'+st.lv+' '+st.name+'로 성장!\n'+rw);burst(document.getElementById('bigCat'));burst(document.getElementById('bigCat'))}else showModal('📖','기록 완료!','"'+title+'" 기록 완료!',rw);burst(document.querySelector('.add-btn'));render()}
+function checkQuests(){QS.forEach(q=>{if(S.questDone[q.id])return;if(getQP(q)>=q.target){S.questDone[q.id]=true;S.coins+=q.reward}})}
+function doGacha(){if(S.coins<20){alert('코인이 부족해! 책을 더 읽어봐냥~');return}S.coins-=20;S.stats.gachaCount=(S.stats.gachaCount||0)+1;document.getElementById('gachaBtn').disabled=true;let count=0;const iv=setInterval(()=>{[0,1,2].forEach(i=>document.getElementById('slot'+i).textContent=SI[Math.floor(Math.random()*SI.length)]);if(++count>12){clearInterval(iv);const rand=Math.random();let cl=0,result=GT[GT.length-1];for(const g of GT){cl+=g.prob;if(rand<cl){result=g;break}}[0,1,2].forEach(i=>document.getElementById('slot'+i).textContent=result.emoji);S.exp+=result.exp;S.coins+=result.coin;checkQuests();save();renderHeader();const el=document.getElementById('gachaResult');el.className='gacha-result '+result.cls;el.textContent=result.label+' +'+result.exp+' EXP'+(result.coin?' 🪙+'+result.coin:'');if(result.exp>=60)burst(document.getElementById('slot1'));document.getElementById('gachaBtn').disabled=false}},80)}
+function delBook(at){if(!confirm('이 책 기록을 지울까?'))return;S.books=S.books.filter(b=>b.at!==at);save();render()}
+function buySticker(icon,price){if(S.stickers.includes(icon)){alert('이미 갖고 있어!');return}if(S.coins<price){alert('코인이 부족해!');return}S.coins-=price;S.stickers.push(icon);save();render();showModal(icon,'스티커 획득!',icon+' 스티커를 얻었어!','')}
+function finishOnboard(){const name=document.getElementById('obName').value.trim();const goal=parseInt(document.getElementById('obGoal').value)||100;if(!name){alert('이름을 지어줘!');return}S.catName=name;S.goal=Math.max(1,goal);S.setup=true;document.getElementById('onboard').classList.remove('show');save();syncSettings();render();showModal(getStage().e,'반가워냥!',S.catName+'! 잘 부탁해냥~','목표: '+S.goal+'권 화이팅!')}
+function syncSettings(){document.getElementById('setCatName').value=S.catName||'';document.getElementById('setGoal').value=S.goal||100}
+function saveCatName(){const v=document.getElementById('setCatName').value.trim();if(!v){alert('이름 입력해줘!');return}S.catName=v;save();render();showModal(getStage().e,'이름 변경!',v+'(이)라는 멋진 이름이냥!','')}
+function saveGoal(){const v=parseInt(document.getElementById('setGoal').value)||100;S.goal=Math.max(1,v);save();render();showModal('🎯','목표 변경!','목표: '+S.goal+'권 화이팅냥!','')}
+function resetAll(){if(!confirm('정말로 모든 기록을 지울까?'))return;localStorage.removeItem('catRPG4');location.reload()}
+function tapCat(){const st=getStage();document.getElementById('speech').textContent=st.say[Math.floor(Math.random()*st.say.length)];burst(document.getElementById('bigCat'))}
+function tapHeaderCat(){document.getElementById('speech').textContent=['오늘도 화이팅냥!','책 읽어줘서 고마워냥!','코인으로 뽑기 해봐냥!'][Math.floor(Math.random()*3)]}
+function showModal(emoji,title,desc,reward){document.getElementById('mEmoji').textContent=emoji;document.getElementById('mTitle').textContent=title;document.getElementById('mDesc').textContent=desc;document.getElementById('mReward').textContent=reward||'';document.getElementById('modal').classList.add('show')}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+function sw(id){['home','add','list','quest','shop','settings'].forEach(t=>document.getElementById('t-'+t).style.display=t===id?'block':'none');document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['home','add','list','quest','shop','settings'][i]===id));if(id==='list')renderBooks();if(id==='quest')renderQuests();if(id==='shop')renderShop();if(id==='add')updateExpPreview()}
+function burst(el){const emojis=['⭐','✨','💫','🎉','🪙','💖','🌟'];const rect=el?el.getBoundingClientRect():{left:160,top:200,width:40,height:40};const cx=rect.left+rect.width/2,cy=rect.top+rect.height/2,c=document.getElementById('ptcl');for(let i=0;i<8;i++){const p=document.createElement('div');p.className='particle';p.textContent=emojis[Math.floor(Math.random()*emojis.length)];p.style.left=(cx+Math.random()*80-40)+'px';p.style.top=(cy-10)+'px';p.style.animationDelay=(Math.random()*.3)+'s';c.appendChild(p);setTimeout(()=>p.remove(),1500)}}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+load();
+setInterval(()=>{if(S.setup){const st=getStage();document.getElementById('speech').textContent=st.say[Math.floor(Math.random()*st.say.length)]}},7000);
+</script>
+</body>
+</html>
