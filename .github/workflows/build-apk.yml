@@ -18,8 +18,10 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: cordova.variables.gradle 생성
+      - name: 누락 파일/폴더 생성
         run: |
+          mkdir -p android/capacitor-cordova-android-plugins/src/main/java
+          mkdir -p android/capacitor-cordova-android-plugins/src/main/res
           cat > android/capacitor-cordova-android-plugins/cordova.variables.gradle << 'GRADLE'
           ext {
             cdvMinSdkVersion = project.hasProperty('minSdkVersion') ? rootProject.ext.minSdkVersion : 22
